@@ -29,7 +29,7 @@ from src.store.memory_store import InMemoryStore
 logger = logging.getLogger(__name__)
 
 _DATA_PATH = (
-    Path(__file__).parent.parent.parent.parent / "data" / "municipios.json"
+    Path(os.getenv("DATA_PATH", "/app/data/municipios.json"))
 )
 
 
@@ -192,3 +192,4 @@ def _status_label(code: int) -> str:
 
 
 app = create_app()
+
