@@ -7,6 +7,7 @@ Uso via CLI:
 
 import json
 import logging
+import os
 import sys
 import time
 from collections import Counter
@@ -26,7 +27,10 @@ from src.etl.stages.validate import CriticalValidationError, ValidateStage
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_OUTPUT = Path("/app/data/municipios.json")
+_DEFAULT_OUTPUT = Path(
+    os.environ.get("DATA_PATH") or
+    str(Path(__file__).resolve().parents[3] / "data" / "municipios.json")
+)
 
 
 @dataclass

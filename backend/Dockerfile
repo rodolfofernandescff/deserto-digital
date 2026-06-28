@@ -10,6 +10,10 @@ RUN pip install --no-cache-dir -e "."
 
 COPY src/ ./src/
 
+# Corrige o DATA_PATH: main.py usa parents[3] que em Docker resolve para /
+# mas o ETL salva em /app/data/. ENV explicita elimina a ambiguidade.
+ENV DATA_PATH=/app/data/municipios.json
+
 # Gera o dataset durante o build (ANATEL + IBGE) e salva em /app/data/
 RUN mkdir -p /app/data \
     && python -m src.etl.pipeline --output /app/data/municipios.json

@@ -14,7 +14,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { ComposableMap, Geographies, Geography, Annotation } from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Annotation, ZoomableGroup } from 'react-simple-maps'
 import { iddToColor, NIVEL_COLORS, NIVEL_LABELS, nivelFromIdd, COR_SEM_DADOS, UFS } from '@/lib/constants'
 import type { EstadoMapa, NivelDeserto } from '@/lib/types'
 import Link from 'next/link'
@@ -58,8 +58,9 @@ const STATE_CENTROIDS: Record<string, [number, number]> = {
 const STATE_FONT_SIZE: Partial<Record<string, number>> = {
   DF: 6, SE: 8, AL: 8, RN: 8, PB: 8, RJ: 8, ES: 9, SC: 10,
 }
-const DEFAULT_FONT_SIZE = 12
+const DEFAULT_FONT_SIZE = 11
 const MOBILE_SCALE = 0.7
+const MAP_CENTER: [number, number] = [-54, -15]
 
 interface MapaBrasilProps {
   estadosData: EstadoMapa[]
@@ -129,6 +130,10 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
   const [geoFeatures, setGeoFeatures] = useState<object[]>([])
   const [isMobile, setIsMobile] = useState(false)
   const [animationReady, setAnimationReady] = useState(false)
+  const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number }>({
+    coordinates: MAP_CENTER,
+    zoom: 1,
+  })
 
   useEffect(() => {
     setMounted(true)
@@ -176,10 +181,32 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
     onEstadoClick(estadoSelecionado ?? '')
   }, [estadoSelecionado, onEstadoClick])
 
-  const projectionScale = isMobile ? 620 : 820
+  const handleMoveEnd = useCallback(
+    (pos: { coordinates: [number, number]; zoom: number }) => setPosition(pos),
+    [],
+  )
+
+  const handleZoomIn = useCallback(
+    () => setPosition(p => ({ ...p, zoom: Math.min(p.zoom * 1.6, 8) })),
+    [],
+  )
+
+  const handleZoomOut = useCallback(
+    () => setPosition(p => ({ ...p, zoom: Math.max(p.zoom / 1.6, 1) })),
+    [],
+  )
+
+  const handleReset = useCallback(
+    () => setPosition({ coordinates: MAP_CENTER, zoom: 1 }),
+    [],
+  )
+
+  const projectionScale = isMobile ? 700 : 900
+  // Font scale keeps labels readable regardless of zoom level
+  const labelFontScale = 1 / Math.sqrt(position.zoom)
 
   return (
-    <div className="relative w-full flex-1 min-h-[360px] aspect-[3/4] sm:aspect-[4/3] lg:aspect-auto lg:h-full flex items-center justify-center overflow-hidden touch-manipulation">
+    <div className="relative w-full flex-1 min-h-[420px] aspect-[9/10] sm:aspect-[4/3] lg:aspect-auto lg:h-full flex items-center justify-center overflow-hidden touch-manipulation">
 
       {/* Noise texture overlay para dar riqueza visual */}
       <div
@@ -193,11 +220,14 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
       {mounted && geoFeatures.length > 0 && (
         <ComposableMap
           projection="geoMercator"
-          projectionConfig={{ scale: projectionScale, center: [-54, -15] }}
+          projectionConfig={{ scale: projectionScale, center: MAP_CENTER }}
+          width={680}
+          height={760}
           className="w-full h-full"
           style={{
             opacity: animationReady ? 1 : 0,
             transition: 'opacity 0.5s ease',
+            cursor: position.zoom > 1 ? 'grab' : 'default',
           }}
         >
           {/* SVG defs inline */}
@@ -213,6 +243,14 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
               </feMerge>
             </filter>
           </defs>
+
+          <ZoomableGroup
+            zoom={position.zoom}
+            center={position.coordinates}
+            onMoveEnd={handleMoveEnd}
+            minZoom={1}
+            maxZoom={8}
+          >
 
           <Geographies geography={geoFeatures}>
             {({ geographies }) =>
@@ -293,9 +331,7 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
             const isSelected = estadoSelecionado === uf
             const isOtherSelected = estadoSelecionado !== null && !isSelected
             const baseFontSize = STATE_FONT_SIZE[uf] ?? DEFAULT_FONT_SIZE
-            const fontSize = isMobile
-              ? Math.round(baseFontSize * MOBILE_SCALE)
-              : baseFontSize
+            const fontSize = (isMobile ? Math.round(baseFontSize * MOBILE_SCALE) : baseFontSize) * labelFontScale
 
             return (
               <Annotation
@@ -310,9 +346,9 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
                   dominantBaseline="middle"
                   fill={isSelected ? '#fff' : 'rgba(255,255,255,0.88)'}
                   stroke="rgba(0,0,0,0.7)"
-                  strokeWidth={isMobile ? 2.5 : 4}
+                  strokeWidth={(isMobile ? 2.5 : 4) * labelFontScale}
                   paintOrder="stroke fill"
-                  fontSize={isSelected ? fontSize + 2 : fontSize}
+                  fontSize={isSelected ? fontSize + 2 * labelFontScale : fontSize}
                   fontWeight={isSelected ? 900 : 700}
                   fontFamily="'JetBrains Mono', 'Fira Code', monospace"
                   letterSpacing="0.04em"
@@ -328,7 +364,44 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
               </Annotation>
             )
           })}
+
+          </ZoomableGroup>
         </ComposableMap>
+      )}
+
+      {/* ── Zoom controls ────────────────────────────────────────────────── */}
+      {mounted && geoFeatures.length > 0 && (
+        <div className="absolute bottom-10 right-2 z-20 flex flex-col gap-1">
+          <button
+            onClick={handleZoomIn}
+            className="w-8 h-8 rounded-lg bg-surface/80 border border-border/40 text-text-base/70
+                       hover:text-text-base hover:bg-surface backdrop-blur-sm flex items-center justify-center
+                       text-xl font-light leading-none transition-all select-none"
+            aria-label="Ampliar"
+          >
+            +
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="w-8 h-8 rounded-lg bg-surface/80 border border-border/40 text-text-base/70
+                       hover:text-text-base hover:bg-surface backdrop-blur-sm flex items-center justify-center
+                       text-xl font-light leading-none transition-all select-none"
+            aria-label="Reduzir"
+          >
+            −
+          </button>
+          {position.zoom > 1.05 && (
+            <button
+              onClick={handleReset}
+              className="w-8 h-8 rounded-lg bg-surface/80 border border-border/40 text-text-base/40
+                         hover:text-text-base hover:bg-surface backdrop-blur-sm flex items-center justify-center
+                         text-base transition-all select-none"
+              aria-label="Resetar zoom"
+            >
+              ↺
+            </button>
+          )}
+        </div>
       )}
 
       {/* ── Loading state ────────────────────────────────────────────────── */}

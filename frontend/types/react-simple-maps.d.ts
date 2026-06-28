@@ -62,6 +62,22 @@ declare module 'react-simple-maps' {
 
   export function Annotation(props: AnnotationProps): JSX.Element
 
+  export interface ZoomableGroupProps {
+    zoom?: number
+    center?: [number, number]
+    minZoom?: number
+    maxZoom?: number
+    translateExtent?: [[number, number], [number, number]]
+    filterZoomEvent?: (event: WheelEvent | TouchEvent | MouseEvent) => boolean
+    onMoveStart?: (position: { coordinates: [number, number]; zoom: number }, event: MouseEvent | TouchEvent) => void
+    onMove?: (position: { x: number; y: number; zoom: number; dragging: boolean }) => void
+    onMoveEnd?: (position: { coordinates: [number, number]; zoom: number }) => void
+    className?: string
+    children?: ReactNode
+  }
+
+  export function ZoomableGroup(props: ZoomableGroupProps): JSX.Element
+
   export interface LineProps {
     from: [number, number]
     to: [number, number]
