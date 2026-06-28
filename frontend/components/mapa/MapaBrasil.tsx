@@ -5,12 +5,43 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { ComposableMap, Geographies, Geography } from 'react-simple-maps'
+import { ComposableMap, Geographies, Geography, Annotation } from 'react-simple-maps'
 import { iddToColor, NIVEL_COLORS, NIVEL_LABELS, nivelFromIdd } from '@/lib/constants'
 import type { EstadoMapa } from '@/lib/types'
 
 const GEO_URL =
   'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson'
+
+// Centroides aproximados [lon, lat] de cada estado para renderizar as siglas
+const STATE_CENTROIDS: Record<string, [number, number]> = {
+  AC: [-70.5,  -9.0],
+  AL: [-36.6,  -9.5],
+  AM: [-64.0,  -4.0],
+  AP: [-51.5,   1.5],
+  BA: [-41.7, -12.5],
+  CE: [-39.5,  -5.0],
+  DF: [-47.9, -15.8],
+  ES: [-40.5, -19.7],
+  GO: [-49.5, -15.9],
+  MA: [-44.5,  -5.5],
+  MG: [-44.5, -18.5],
+  MS: [-54.7, -20.5],
+  MT: [-55.0, -12.5],
+  PA: [-52.5,  -4.0],
+  PB: [-36.8,  -7.0],
+  PE: [-37.5,  -8.5],
+  PI: [-42.8,  -7.5],
+  PR: [-51.6, -24.6],
+  RJ: [-43.2, -22.2],
+  RN: [-36.5,  -5.8],
+  RO: [-63.0, -11.0],
+  RR: [-61.5,   2.0],
+  RS: [-53.2, -30.0],
+  SC: [-50.5, -27.3],
+  SE: [-37.4, -10.5],
+  SP: [-48.8, -22.0],
+  TO: [-48.3, -10.5],
+}
 
 interface MapaBrasilProps {
   estadosData: EstadoMapa[]
@@ -127,6 +158,33 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
               })
             }
           </Geographies>
+
+          {/* Siglas dos estados — visíveis apenas quando o mapa estiver carregado */}
+          {Object.entries(STATE_CENTROIDS).map(([uf, coords]) => (
+            <Annotation
+              key={`label-${uf}`}
+              subject={coords}
+              dx={0}
+              dy={0}
+              connectorProps={{ stroke: 'none', strokeWidth: 0 }}
+            >
+              <text
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="rgba(255,255,255,0.90)"
+                stroke="rgba(0,0,0,0.55)"
+                strokeWidth={isMobile ? 2.5 : 3}
+                paintOrder="stroke fill"
+                fontSize={isMobile ? 6 : 8}
+                fontWeight={700}
+                fontFamily="'JetBrains Mono', 'Fira Code', monospace"
+                letterSpacing="0.05em"
+                style={{ pointerEvents: 'none', userSelect: 'none' }}
+              >
+                {uf}
+              </text>
+            </Annotation>
+          ))}
         </ComposableMap>
       )}
 

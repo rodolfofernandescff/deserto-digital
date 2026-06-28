@@ -27,76 +27,92 @@ export default async function HomePage() {
   const pctDesertos = stats?.percentual_desertos ?? 0
 
   return (
-    <div className="container-app py-6 sm:py-8 space-y-10 sm:space-y-16 animate-fade-in pb-16 sm:pb-20">
-      {/* ── Hero Section ──────────────────────────────────────────────── */}
-      <section className="text-center py-16 sm:py-24 lg:py-32 relative">
+    <div className="container-app animate-fade-in pb-16 sm:pb-20">
+
+      {/* ── Hero + Mapa — tudo acima do fold ─────────────────────────── */}
+      <section className="pt-8 sm:pt-10 pb-6 sm:pb-8 relative">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/10 via-background to-background" />
 
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight px-2">
-          Brasil em <span className="text-gradient">silêncio digital</span>
-        </h1>
-        <p className="text-base sm:text-xl lg:text-2xl text-text-base/70 max-w-3xl mx-auto font-light px-4 mt-4 sm:mt-6">
-          Descubra onde a internet ainda não chegou
-        </p>
-
-        {stats ? (
-          <div className="mt-10 sm:mt-16 space-y-6 sm:space-y-8">
-            {/* O IDD domina */}
-            <div>
-              <div className="text-[3.5rem] sm:text-[7rem] lg:text-[10rem] font-mono font-black text-critico leading-none tabular-nums">
-                {pctDesertos.toFixed(1)}%
-              </div>
-              <p className="text-base sm:text-xl text-text-base/55 font-light mt-3 sm:mt-4">
-                do território nacional em situação vulnerável
-              </p>
-            </div>
-
-            {/* Demais dados: texto corrido com hierarquia de tamanho */}
-            <div className="flex flex-wrap justify-center items-baseline gap-x-8 sm:gap-x-12 gap-y-3 px-4">
-              <span className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-mono font-bold text-text-base tabular-nums">
-                  {(criticos + vulneraveis).toLocaleString('pt-BR')}
-                </span>
-                <span className="text-sm text-text-base/50">em situação vulnerável</span>
-              </span>
-              <span className="flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-mono font-semibold text-emergente tabular-nums">
-                  {emergentes.toLocaleString('pt-BR')}
-                </span>
-                <span className="text-sm text-text-base/50">em risco emergente</span>
-              </span>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-text-base/50 mt-10">
-            Dados temporariamente indisponíveis.
+        {/* Heading — compacto para caber com o mapa */}
+        <div className="text-center mb-8 sm:mb-10 px-2">
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+            Brasil em <span className="text-gradient">silêncio digital</span>
+          </h1>
+          <p className="text-base sm:text-xl text-text-base/70 max-w-2xl mx-auto font-light mt-3 sm:mt-4">
+            Descubra onde a internet ainda não chegou
           </p>
-        )}
+        </div>
+
+        {/* Layout principal: stats à esquerda, mapa à direita */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
+
+          {/* Stats panel — full width no mobile, coluna fixa no desktop */}
+          <div className="w-full lg:w-52 xl:w-60 shrink-0 px-1 lg:px-0">
+            {stats ? (
+              <div className="space-y-5 lg:sticky lg:top-24">
+
+                {/* Número principal */}
+                <div>
+                  <div className="text-[3.5rem] sm:text-[4.5rem] lg:text-[3rem] xl:text-[3.5rem] font-mono font-black text-critico leading-none tabular-nums">
+                    {pctDesertos.toFixed(1)}%
+                  </div>
+                  <p className="text-sm text-text-base/55 font-light mt-2 leading-snug">
+                    do território nacional<br className="hidden lg:block" /> em situação vulnerável
+                  </p>
+                </div>
+
+                {/* Dados secundários */}
+                <div className="flex lg:flex-col gap-6 lg:gap-3 pt-4 border-t border-border/30">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl sm:text-3xl lg:text-2xl font-mono font-bold text-text-base tabular-nums">
+                      {(criticos + vulneraveis).toLocaleString('pt-BR')}
+                    </span>
+                    <span className="text-xs text-text-base/50 leading-tight">
+                      críticos ou<br />vulneráveis
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl sm:text-2xl lg:text-xl font-mono font-semibold text-emergente tabular-nums">
+                      {emergentes.toLocaleString('pt-BR')}
+                    </span>
+                    <span className="text-xs text-text-base/50">em risco emergente</span>
+                  </div>
+                </div>
+
+                {/* CTA inline */}
+                <Link
+                  href="/ranking"
+                  className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent/80 transition-colors font-medium pt-1"
+                >
+                  Ver ranking completo
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+
+              </div>
+            ) : (
+              <p className="text-sm text-text-base/50">
+                Dados temporariamente indisponíveis.
+              </p>
+            )}
+          </div>
+
+          {/* Mapa — ocupa o espaço restante */}
+          <div className="flex-1 min-w-0 w-full" aria-label="Mapa do Brasil">
+            <HomeMapSection estadosData={estados} />
+          </div>
+        </div>
 
         {stats && total > 0 && (
-          <p className="text-xs text-text-base/35 max-w-2xl mx-auto px-4 mt-8">
-            Baseado no Censo Demográfico 2022 (IBGE) · Referência {stats.mes_referencia ?? 'junho de 2025'}
+          <p className="text-xs text-text-base/30 mt-5 text-right px-1">
+            Censo 2022 (IBGE) · Ref. {stats.mes_referencia ?? ''}
           </p>
         )}
-      </section>
-
-      {/* ── Mapa Interativo ───────────────────────────────────────────── */}
-      <section aria-label="Mapa do Brasil" className="w-full">
-        <HomeMapSection estadosData={estados} />
-      </section>
-
-      {/* ── CTA — Links de navegação ──────────────────────────────────── */}
-      <section className="flex flex-col sm:flex-row gap-4 justify-center py-4 sm:py-8 px-2">
-        <Link
-          href="/ranking"
-          className="px-6 sm:px-8 py-3 sm:py-4 bg-accent text-background font-bold rounded-lg hover:bg-accent/90 transition-all text-center shadow-glow"
-        >
-          Ver ranking completo →
-        </Link>
       </section>
 
       {/* ── Explicação Section ────────────────────────────────────────── */}
-      <section className="space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-6 sm:pt-10 px-2">
+      <section className="space-y-6 sm:space-y-8 max-w-5xl mx-auto py-12 sm:py-16 px-2 border-t border-border/20">
         <div className="text-center space-y-3">
           <h2 className="font-display text-2xl sm:text-3xl font-bold">O que é o Índice de Deserto Digital?</h2>
           <p className="text-sm sm:text-base text-text-base/60">
@@ -149,6 +165,7 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
     </div>
   )
 }

@@ -50,4 +50,15 @@ declare module 'react-simple-maps' {
   }
 
   export function Geography(props: GeographyProps): JSX.Element
+
+  export interface AnnotationProps {
+    subject: [number, number]
+    dx?: number
+    dy?: number
+    connectorProps?: React.SVGProps<SVGPathElement>
+    children?: ReactNode
+    style?: React.CSSProperties
+  }
+
+  export function Annotation(props: AnnotationProps): JSX.Element
 }

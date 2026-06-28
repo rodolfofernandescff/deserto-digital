@@ -25,7 +25,7 @@ export function HomeMapSection({ estadosData }: HomeMapSectionProps) {
   return (
     <div className="relative w-full flex flex-col lg:flex-row gap-6 sm:gap-8">
       {/* Mapa — sem card, respira direto na página */}
-      <div className="flex-1 min-w-0 relative">
+      <div className="flex-1 min-w-0">
         <MapaBrasil
           estadosData={estadosData}
           estadoSelecionado={selectedUF}
