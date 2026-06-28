@@ -26,7 +26,7 @@ from src.etl.stages.validate import CriticalValidationError, ValidateStage
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_OUTPUT = Path(__file__).parent.parent.parent.parent / "data" / "municipios.json"
+_DEFAULT_OUTPUT = Path("/app/data/municipios.json")
 
 
 @dataclass
@@ -229,3 +229,4 @@ if __name__ == "__main__":
             for e in resultado.erros[:10]:
                 print(f"  • {e}")
         sys.exit(0 if resultado.sucesso else 1)
+
