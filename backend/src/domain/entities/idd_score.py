@@ -31,7 +31,7 @@ class IDDScore(BaseModel):
 
     score: float
     nivel: str
-    componentes: dict[str, float]
+    componentes: dict[str, float | bool]
     confianca: float
 
     @field_validator("score")

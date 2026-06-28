@@ -16,8 +16,11 @@ class IDDScorer:
     """Calcula o IDDScore de um município a partir de seus campos de conectividade.
 
     Score de 0 a 100 onde 100 representa o pior cenário de deserto digital.
-    Cada dimensão contribui proporcionalmente ao seu peso; a soma é clampada
-    em [0.0, 100.0] como rede de segurança para pesos personalizados.
+
+    Quando não há dados ANATEL (acessos_banda_larga == 0 e tem_backhaul == False),
+    os pesos de infraestrutura e backhaul são zerados e redistribuídos
+    proporcionalmente entre exclusão digital e renda, preservando a capacidade
+    de classificar municípios apenas com dados do IBGE.
 
     Usage:
         scorer = IDDScorer()
@@ -39,38 +42,77 @@ class IDDScorer:
     def calculate(self, municipio: Municipio) -> IDDScore:
         """Calcula e retorna o IDDScore para o município fornecido.
 
+        Quando ANATEL indisponível, redistribui pesos entre exclusão e renda.
+
         Args:
             municipio: Instância de Municipio com campos de conectividade preenchidos.
 
         Returns:
             IDDScore com score, nivel, componentes e fator de confiança.
         """
-        comp_infraestrutura = (
-            (1.0 - min(municipio.densidade_banda_larga, 100.0) / 100.0)
-            * 100.0
-            * self.peso_infraestrutura
+        tem_dados_anatel = municipio.acessos_banda_larga > 0 or municipio.tem_backhaul
+
+        if tem_dados_anatel:
+            peso_infra = self.peso_infraestrutura
+            peso_exclusao = self.peso_exclusao
+            peso_renda = self.peso_renda
+            peso_backhaul = self.peso_backhaul
+        else:
+            # Sem ANATEL: redistribui 50% infra + 10% backhaul entre exclusão e renda
+            peso_infra = 0.0
+            peso_exclusao = 0.60
+            peso_renda = 0.40
+            peso_backhaul = 0.0
+
+        if tem_dados_anatel:
+            componente_infraestrutura = (
+                (1.0 - min(municipio.densidade_banda_larga, 100.0) / 100.0)
+                * 100.0
+                * peso_infra
+            )
+        else:
+            componente_infraestrutura = 0.0
+
+        componente_exclusao = municipio.percentual_sem_internet * peso_exclusao
+
+        componente_renda = (
+            self._normalizar_renda(municipio.renda_per_capita) * 100.0 * peso_renda
         )
 
-        comp_exclusao = municipio.percentual_sem_internet * self.peso_exclusao
+        if tem_dados_anatel:
+            componente_backhaul = (0.0 if municipio.tem_backhaul else 100.0) * peso_backhaul
+        else:
+            componente_backhaul = 0.0
 
-        comp_renda = (
-            self._normalizar_renda(municipio.renda_per_capita)
-            * 100.0
-            * self.peso_renda
+        score = max(
+            0.0,
+            min(
+                100.0,
+                componente_infraestrutura
+                + componente_exclusao
+                + componente_renda
+                + componente_backhaul,
+            ),
         )
 
-        comp_backhaul = (0.0 if municipio.tem_backhaul else 100.0) * self.peso_backhaul
-
-        componentes: dict[str, float] = {
-            "infraestrutura": round(comp_infraestrutura, 6),
-            "exclusao": round(comp_exclusao, 6),
-            "renda": round(comp_renda, 6),
-            "backhaul": round(comp_backhaul, 6),
-        }
-
-        score = max(0.0, min(100.0, sum(componentes.values())))
         nivel = self._classificar_nivel(score)
-        confianca = self._calcular_confianca(municipio)
+
+        confianca = 1.0
+        if not tem_dados_anatel:
+            confianca -= 0.3
+        if municipio.populacao == 0:
+            confianca -= 0.4
+        if municipio.domicilios_total == 0:
+            confianca -= 0.3
+        confianca = max(0.0, min(1.0, confianca))
+
+        componentes: dict[str, float | bool] = {
+            "infraestrutura": round(componente_infraestrutura, 4),
+            "exclusao": round(componente_exclusao, 4),
+            "renda": round(componente_renda, 4),
+            "backhaul": round(componente_backhaul, 4),
+            "tem_dados_anatel": tem_dados_anatel,
+        }
 
         return IDDScore(
             score=round(score, 4),
@@ -90,21 +132,10 @@ class IDDScorer:
 
     def _classificar_nivel(self, score: float) -> str:
         """Mapeia score numérico para classificação qualitativa do deserto digital."""
-        if score >= 60.0:
+        if score >= 55.0:
             return "CRITICO"
-        if score >= 40.0:
+        if score >= 35.0:
             return "VULNERAVEL"
-        if score >= 18.0:
+        if score >= 15.0:
             return "EMERGENTE"
         return "CONECTADO"
-
-    def _calcular_confianca(self, municipio: Municipio) -> float:
-        """Penaliza a confiança quando campos críticos estão ausentes ou zerados."""
-        confianca = 1.0
-        if municipio.populacao == 0:
-            confianca -= 0.4
-        if municipio.domicilios_total == 0:
-            confianca -= 0.3
-        if municipio.acessos_banda_larga == 0 and not municipio.tem_backhaul:
-            confianca -= 0.2
-        return max(0.0, min(1.0, confianca))
