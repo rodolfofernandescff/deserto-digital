@@ -96,6 +96,16 @@
   .glass {
     @apply bg-surface/80 backdrop-blur-md border border-border/50;
   }
+
+  /* Glassmorphism para callout do estado selecionado no mapa */
+  .callout-glass {
+    @apply bg-surface/90 backdrop-blur-lg border border-border/60 shadow-card;
+  }
+
+  /* Stats overlay glass — mais escuro para legibilidade */
+  .stats-glass {
+    @apply bg-surface/90 backdrop-blur-md border border-border/50 shadow-card;
+  }
 }
 
 /* ── Utility layer — animações e helpers ─────────────────────────────── */
@@ -178,6 +188,36 @@
       opacity: 1;
       transform: scale(1);
     }
+  }
+
+  /* Flutuação suave para hint de interação do mapa */
+  .animate-hint-float {
+    animation: hintFloat 2.8s ease-in-out infinite;
+  }
+
+  @keyframes hintFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* Pulse no ícone do hint */
+  .animate-hint-pulse {
+    animation: hintPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes hintPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+  }
+
+  /* Fade-out suave quando hint desaparece */
+  .animate-fade-out {
+    animation: fadeOut 0.4s ease-in forwards;
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(6px); }
   }
 
   /* Gradiente de destaque para headings */
