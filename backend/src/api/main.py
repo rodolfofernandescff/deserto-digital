@@ -10,6 +10,7 @@ Para produção com múltiplas réplicas, substituir pelo slowapi + Redis.
 from __future__ import annotations
 
 import logging
+import os
 import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
