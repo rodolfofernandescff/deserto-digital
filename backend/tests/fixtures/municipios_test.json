@@ -1,0 +1,127 @@
+{
+  "gerado_em": "2024-10-15T12:00:00+00:00",
+  "total": 5,
+  "mes_referencia": "2024-10",
+  "municipios": [
+    {
+      "codigo_ibge": "3550308",
+      "nome": "São Paulo",
+      "uf": "SP",
+      "regiao": "Sudeste",
+      "populacao": 12396372,
+      "domicilios_total": 5000000,
+      "domicilios_sem_internet": 500000,
+      "renda_per_capita": 2800.0,
+      "acessos_banda_larga": 4500000,
+      "tem_backhaul": true,
+      "atualizado_em": "2024-10-15T12:00:00+00:00",
+      "idd_score": 9.7639,
+      "nivel_deserto": "CONECTADO",
+      "componentes_idd": {
+        "infraestrutura": 4.0,
+        "exclusao": 3.0,
+        "renda": 2.7639,
+        "backhaul": 0.0
+      },
+      "fonte_anatel_mes": "2024-10",
+      "densidade_banda_larga": 90.0,
+      "percentual_sem_internet": 10.0
+    },
+    {
+      "codigo_ibge": "4314902",
+      "nome": "Porto Alegre",
+      "uf": "RS",
+      "regiao": "Sul",
+      "populacao": 1492530,
+      "domicilios_total": 650000,
+      "domicilios_sem_internet": 97500,
+      "renda_per_capita": 2500.0,
+      "acessos_banda_larga": 550000,
+      "tem_backhaul": true,
+      "atualizado_em": "2024-10-15T12:00:00+00:00",
+      "idd_score": 13.6644,
+      "nivel_deserto": "CONECTADO",
+      "componentes_idd": {
+        "infraestrutura": 6.1538,
+        "exclusao": 4.5,
+        "renda": 3.0106,
+        "backhaul": 0.0
+      },
+      "fonte_anatel_mes": "2024-10",
+      "densidade_banda_larga": 84.6154,
+      "percentual_sem_internet": 15.0
+    },
+    {
+      "codigo_ibge": "1302603",
+      "nome": "Manaus",
+      "uf": "AM",
+      "regiao": "Norte",
+      "populacao": 2219580,
+      "domicilios_total": 700000,
+      "domicilios_sem_internet": 280000,
+      "renda_per_capita": 980.0,
+      "acessos_banda_larga": 350000,
+      "tem_backhaul": true,
+      "atualizado_em": "2024-10-15T12:00:00+00:00",
+      "idd_score": 37.0442,
+      "nivel_deserto": "EMERGENTE",
+      "componentes_idd": {
+        "infraestrutura": 20.0,
+        "exclusao": 12.0,
+        "renda": 5.0442,
+        "backhaul": 0.0
+      },
+      "fonte_anatel_mes": "2024-10",
+      "densidade_banda_larga": 50.0,
+      "percentual_sem_internet": 40.0
+    },
+    {
+      "codigo_ibge": "1506807",
+      "nome": "Santarém",
+      "uf": "PA",
+      "regiao": "Norte",
+      "populacao": 336949,
+      "domicilios_total": 95000,
+      "domicilios_sem_internet": 76000,
+      "renda_per_capita": 450.0,
+      "acessos_banda_larga": 5000,
+      "tem_backhaul": true,
+      "atualizado_em": "2024-10-15T12:00:00+00:00",
+      "idd_score": 68.6291,
+      "nivel_deserto": "VULNERAVEL",
+      "componentes_idd": {
+        "infraestrutura": 37.8947,
+        "exclusao": 24.0,
+        "renda": 6.7344,
+        "backhaul": 0.0
+      },
+      "fonte_anatel_mes": "2024-10",
+      "densidade_banda_larga": 5.2632,
+      "percentual_sem_internet": 80.0
+    },
+    {
+      "codigo_ibge": "1301803",
+      "nome": "Itamarati",
+      "uf": "AM",
+      "regiao": "Norte",
+      "populacao": 9937,
+      "domicilios_total": 2800,
+      "domicilios_sem_internet": 2520,
+      "renda_per_capita": 350.0,
+      "acessos_banda_larga": 0,
+      "tem_backhaul": false,
+      "atualizado_em": "2024-10-15T12:00:00+00:00",
+      "idd_score": 84.2798,
+      "nivel_deserto": "CRITICO",
+      "componentes_idd": {
+        "infraestrutura": 40.0,
+        "exclusao": 27.0,
+        "renda": 7.2798,
+        "backhaul": 10.0
+      },
+      "fonte_anatel_mes": "2024-10",
+      "densidade_banda_larga": 0.0,
+      "percentual_sem_internet": 90.0
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+Add-Content .gitignore "# Python / Backend
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+backend/data/municipios.json
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+frontend/.env.local
+frontend/.env.*.local
+!frontend/.env.local.example
+*.tsbuildinfo
+npm-debug.log*
+
+# IDE / OS
+.vscode/settings.json
+.idea/
+*.DS_Store
+Thumbs.db
+*.swp"
+# Claude Code
+.claude/

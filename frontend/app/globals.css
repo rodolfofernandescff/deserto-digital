@@ -1,0 +1,162 @@
+/* ── Google Fonts (Inter + JetBrains Mono) ──────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base layer — dark theme defaults ────────────────────────────────── */
+@layer base {
+  :root {
+    --color-background: #0F1117;
+    --color-surface: #1A1D27;
+    --color-border: #2D3148;
+    --color-text: #E2E8F0;
+    --color-accent: #1B9AAA;
+    --color-critico: #E53E3E;
+    --color-vulneravel: #ED8936;
+    --color-emergente: #ECC94B;
+    --color-conectado: #48BB78;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-text-base font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  /* Scrollbar customizada para manter consistência visual */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent/50;
+  }
+}
+
+/* ── Component layer — classes reutilizáveis ─────────────────────────── */
+@layer components {
+  /* Card padrão com borda sutil e hover suave */
+  .card {
+    @apply bg-surface border border-border rounded-card p-6
+           shadow-card transition-all duration-300
+           hover:border-accent/30 hover:shadow-glow;
+  }
+
+  /* Card sem hover — para containers estáticos */
+  .card-static {
+    @apply bg-surface border border-border rounded-card p-6 shadow-card;
+  }
+
+  /* Badge semaforizado genérico */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full
+           text-xs font-semibold uppercase tracking-wider;
+  }
+
+  /* Container responsivo padrão */
+  .container-app {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Título de seção */
+  .section-title {
+    @apply text-2xl sm:text-3xl font-bold tracking-tight;
+  }
+
+  /* Link sutil com transição */
+  .link {
+    @apply text-accent hover:text-accent/80 transition-colors duration-200
+           underline underline-offset-4 decoration-accent/30
+           hover:decoration-accent/60;
+  }
+
+  /* Skeleton loading placeholder */
+  .skeleton {
+    @apply bg-border/50 animate-pulse rounded;
+  }
+
+  /* Stat number (usado em StatCard e outros) */
+  .stat-number {
+    @apply text-4xl sm:text-5xl font-extrabold tracking-tight font-mono;
+  }
+
+  /* Efeito glassmorphism para overlays e tooltips */
+  .glass {
+    @apply bg-surface/80 backdrop-blur-md border border-border/50;
+  }
+}
+
+/* ── Utility layer — animações e helpers ─────────────────────────────── */
+@layer utilities {
+  /* Fade-in suave para transições de página */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slide-up para cards e modais */
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Pulse lento para indicadores de status */
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Glow animado para elementos de destaque */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 8px rgba(27, 154, 170, 0.2);
+    }
+    to {
+      box-shadow: 0 0 20px rgba(27, 154, 170, 0.5);
+    }
+  }
+
+  /* Gradiente de destaque para headings */
+  .text-gradient {
+    @apply bg-clip-text text-transparent
+           bg-gradient-to-r from-accent via-conectado to-accent;
+  }
+}
