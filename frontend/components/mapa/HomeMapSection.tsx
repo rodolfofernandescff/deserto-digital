@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { MapaBrasil } from './MapaBrasil'
 import { MapaLegenda } from './MapaLegenda'
 import Link from 'next/link'
-import { NIVEL_COLORS, NIVEL_LABELS } from '@/lib/constants'
+import { NIVEL_LABELS } from '@/lib/constants'
 import type { EstadoMapa } from '@/lib/types'
 import { UFS } from '@/lib/constants'
 
@@ -23,7 +23,8 @@ export function HomeMapSection({ estadosData }: HomeMapSectionProps) {
   }
 
   return (
-    <div className="relative w-full flex flex-col lg:flex-row gap-4 sm:gap-6">
+    <div className="relative w-full flex flex-col lg:flex-row gap-6 sm:gap-8">
+      {/* Mapa — sem card, respira direto na página */}
       <div className="flex-1 min-w-0 relative">
         <MapaBrasil
           estadosData={estadosData}
@@ -33,25 +34,25 @@ export function HomeMapSection({ estadosData }: HomeMapSectionProps) {
         <MapaLegenda />
       </div>
 
-      {/* Painel lateral — visível no mobile quando um estado é selecionado */}
+      {/* Painel lateral */}
       <div
-        className={`w-full lg:w-80 shrink-0 flex flex-col transition-all duration-300 ease-in-out ${
+        className={`w-full lg:w-72 xl:w-80 shrink-0 flex flex-col transition-all duration-300 ease-in-out ${
           selectedUF
             ? 'opacity-100 translate-y-0'
             : 'hidden lg:flex opacity-50'
         }`}
       >
         {estado ? (
-          <div className="card flex flex-col gap-5 sm:gap-6 animate-fade-in relative overflow-hidden">
+          <div className="flex flex-col gap-6 animate-fade-in relative py-2">
             <button
               onClick={() => setSelectedUF(null)}
-              className="absolute top-4 right-4 text-text-base/40 hover:text-text-base"
+              className="absolute top-0 right-0 text-text-base/30 hover:text-text-base transition-colors"
               aria-label="Fechar painel"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -64,85 +65,70 @@ export function HomeMapSection({ estadosData }: HomeMapSectionProps) {
               </svg>
             </button>
 
+            {/* Nome do estado — sem eyebrow */}
+            <div className="pr-6">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-text-base leading-tight">
+                {estadoNome}
+              </h2>
+              <p className="text-sm text-text-base/40 font-mono mt-0.5">{estado.uf}</p>
+            </div>
+
+            {/* IDD domina */}
             <div>
-              <h3 className="text-xs sm:text-sm text-text-base/60 uppercase tracking-widest font-semibold mb-1">
-                Estado selecionado
-              </h3>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-text-base">{estadoNome}</h2>
-              <p className="text-sm text-text-base/50 font-mono mt-1">{estado.uf}</p>
+              <span className="text-6xl sm:text-7xl font-mono font-extrabold text-accent leading-none tabular-nums">
+                {estado.idd_medio.toFixed(1)}
+              </span>
+              <p className="text-xs text-text-base/45 uppercase tracking-widest mt-1 font-medium">
+                IDD médio
+              </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="rounded-lg bg-background/40 border border-border/40 p-3">
-                <span className="text-xs text-text-base/60 block mb-1">IDD médio</span>
-                <div className="text-2xl sm:text-3xl font-mono font-bold text-accent">
-                  {estado.idd_medio.toFixed(1)}
-                </div>
-              </div>
-              <div className="rounded-lg bg-background/40 border border-border/40 p-3">
-                <span className="text-xs text-text-base/60 block mb-1">Sem internet</span>
-                <div className="text-2xl sm:text-3xl font-mono font-bold text-vulneravel">
-                  {estado.pct_sem_internet_medio.toFixed(1)}%
-                </div>
-              </div>
-              <div className="rounded-lg bg-background/40 border border-border/40 p-3">
-                <span className="text-xs text-text-base/60 block mb-1">Vulneráveis</span>
-                <div className="text-2xl sm:text-3xl font-mono font-bold text-critico">
-                  {estado.pct_vulneravel.toFixed(1)}%
-                </div>
-              </div>
-              <div className="rounded-lg bg-background/40 border border-border/40 p-3">
-                <span className="text-xs text-text-base/60 block mb-1">Densidade BL</span>
-                <div className="text-2xl sm:text-3xl font-mono font-bold text-text-base">
-                  {estado.densidade_media.toFixed(0)}
-                </div>
-              </div>
-            </div>
+            {/* Texto corrido com hierarquia de tamanho */}
+            <p className="text-sm text-text-base/65 leading-relaxed">
+              <span className="text-xl font-mono font-bold text-critico tabular-nums">
+                {estado.pct_vulneravel.toFixed(1)}%
+              </span>{' '}
+              em situação vulnerável
+              {' · '}
+              <span className="text-lg font-mono font-semibold text-vulneravel tabular-nums">
+                {estado.pct_sem_internet_medio.toFixed(1)}%
+              </span>{' '}
+              sem internet
+            </p>
 
-            <div className="flex flex-col gap-2">
-              <span className="text-sm text-text-base/70">Nível predominante</span>
-              <div
-                className="badge w-fit"
-                style={{
-                  backgroundColor:
-                    NIVEL_COLORS[estado.nivel_predominante] || '#999',
-                  color: '#fff',
-                }}
+            {/* Nível predominante — só texto, sem badge colorido */}
+            <p className="text-xs text-text-base/35 uppercase tracking-wider">
+              {NIVEL_LABELS[estado.nivel_predominante as keyof typeof NIVEL_LABELS] ?? estado.nivel_predominante}
+            </p>
+
+            <Link
+              href={`/estados/${estado.uf.toLowerCase()}`}
+              className="w-full flex justify-center items-center gap-2 py-3 bg-surface hover:bg-surface-hover border border-accent/30 rounded-lg text-accent font-semibold transition-all hover:shadow-glow group text-sm"
+            >
+              Ver todos os municípios
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="group-hover:translate-x-1 transition-transform"
               >
-                {NIVEL_LABELS[estado.nivel_predominante] || estado.nivel_predominante}
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href={`/estados/${estado.uf.toLowerCase()}`}
-                className="w-full flex justify-center items-center gap-2 py-3 bg-surface hover:bg-surface-hover border border-accent/30 rounded-lg text-accent font-semibold transition-all hover:shadow-glow group"
-              >
-                Ver todos os municípios
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="group-hover:translate-x-1 transition-transform"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </Link>
-            </div>
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
           </div>
         ) : (
-          <div className="card min-h-[200px] lg:min-h-[420px] flex flex-col items-center justify-center text-center gap-4 text-text-base/40 border-dashed px-4">
+          <div className="min-h-[180px] lg:min-h-[400px] flex flex-col items-center justify-center text-center gap-3 text-text-base/25 px-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
+              width="36"
+              height="36"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -154,9 +140,7 @@ export function HomeMapSection({ estadosData }: HomeMapSectionProps) {
               <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
               <path d="M2 12h20" />
             </svg>
-            <p className="text-sm font-medium max-w-[220px]">
-              Toque em um estado no mapa para ver o resumo de exclusão digital.
-            </p>
+            <p className="text-sm font-medium">Selecione um estado</p>
           </div>
         )}
       </div>

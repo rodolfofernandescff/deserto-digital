@@ -69,7 +69,7 @@ export function MapaBrasil({ estadosData, estadoSelecionado, onEstadoClick }: Ma
   const projectionScale = isMobile ? 620 : 750
 
   return (
-    <div className="relative w-full aspect-[3/4] sm:aspect-[4/3] rounded-xl flex items-center justify-center bg-surface border border-border/50 shadow-inner overflow-hidden touch-manipulation">
+    <div className="relative w-full aspect-[3/4] sm:aspect-[4/3] flex items-center justify-center overflow-hidden touch-manipulation">
       {mounted && geoFeatures.length > 0 && (
         <ComposableMap
           projection="geoMercator"

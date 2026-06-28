@@ -23,66 +23,59 @@ export default async function HomePage() {
   const criticos = stats?.distribuicao_niveis?.CRITICO ?? 0
   const vulneraveis = stats?.distribuicao_niveis?.VULNERAVEL ?? 0
   const emergentes = stats?.distribuicao_niveis?.EMERGENTE ?? 0
-  const semFibra = stats?.municipios_sem_backhaul ?? 0
   const total = stats?.total_municipios ?? 0
   const pctDesertos = stats?.percentual_desertos ?? 0
 
   return (
     <div className="container-app py-6 sm:py-8 space-y-10 sm:space-y-16 animate-fade-in pb-16 sm:pb-20">
       {/* ── Hero Section ──────────────────────────────────────────────── */}
-      <section className="text-center space-y-4 sm:space-y-6 py-8 sm:py-12 md:py-16 relative">
+      <section className="text-center py-24 sm:py-32 relative">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/10 via-background to-background" />
+
         <h1 className="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight px-2">
           Brasil em <span className="text-gradient">silêncio digital</span>
         </h1>
-        <p className="text-base sm:text-xl lg:text-2xl text-text-base/70 max-w-3xl mx-auto font-light px-4">
+        <p className="text-base sm:text-xl lg:text-2xl text-text-base/70 max-w-3xl mx-auto font-light px-4 mt-4 sm:mt-6">
           Descubra onde a internet ainda não chegou
         </p>
 
         {stats ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 sm:pt-10 max-w-4xl mx-auto px-2">
-            <div className="flex flex-col items-center rounded-xl bg-surface/40 border border-border/40 p-4 sm:p-5">
-              <div className="text-3xl sm:text-5xl font-mono font-extrabold text-critico">
-                {criticos + vulneraveis}
-              </div>
-              <div className="text-[10px] sm:text-xs font-medium text-text-base/60 uppercase tracking-widest mt-2 text-center">
-                municípios vulneráveis
-              </div>
-            </div>
-            <div className="flex flex-col items-center rounded-xl bg-surface/40 border border-border/40 p-4 sm:p-5">
-              <div className="text-3xl sm:text-5xl font-mono font-extrabold text-emergente">
-                {emergentes}
-              </div>
-              <div className="text-[10px] sm:text-xs font-medium text-text-base/60 uppercase tracking-widest mt-2 text-center">
-                em risco emergente
-              </div>
-            </div>
-            <div className="flex flex-col items-center rounded-xl bg-surface/40 border border-border/40 p-4 sm:p-5">
-              <div className="text-3xl sm:text-5xl font-mono font-extrabold text-text-base">
-                {semFibra.toLocaleString('pt-BR')}
-              </div>
-              <div className="text-[10px] sm:text-xs font-medium text-text-base/60 uppercase tracking-widest mt-2 text-center">
-                sem fibra óptica
-              </div>
-            </div>
-            <div className="flex flex-col items-center rounded-xl bg-surface/40 border border-border/40 p-4 sm:p-5">
-              <div className="text-3xl sm:text-5xl font-mono font-extrabold text-vulneravel">
+          <div className="mt-14 sm:mt-20 space-y-8 sm:space-y-10">
+            {/* O IDD domina */}
+            <div>
+              <div className="text-[5.5rem] sm:text-[9rem] lg:text-[11rem] font-mono font-extrabold text-critico leading-none tabular-nums">
                 {pctDesertos.toFixed(1)}%
               </div>
-              <div className="text-[10px] sm:text-xs font-medium text-text-base/60 uppercase tracking-widest mt-2 text-center">
-                do território
-              </div>
+              <p className="text-base sm:text-xl text-text-base/55 font-light mt-3 sm:mt-4">
+                do território nacional em situação vulnerável
+              </p>
+            </div>
+
+            {/* Demais dados: texto corrido com hierarquia de tamanho */}
+            <div className="flex flex-wrap justify-center items-baseline gap-x-12 gap-y-3 px-4">
+              <span className="flex items-baseline gap-2">
+                <span className="text-3xl sm:text-4xl font-mono font-bold text-text-base tabular-nums">
+                  {(criticos + vulneraveis).toLocaleString('pt-BR')}
+                </span>
+                <span className="text-sm text-text-base/50">em situação vulnerável</span>
+              </span>
+              <span className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-mono font-semibold text-emergente tabular-nums">
+                  {emergentes.toLocaleString('pt-BR')}
+                </span>
+                <span className="text-sm text-text-base/50">em risco emergente</span>
+              </span>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-text-base/50 pt-6">
+          <p className="text-sm text-text-base/50 mt-14">
             Inicie o backend em <code className="text-accent">127.0.0.1:8000</code> para carregar os dados.
           </p>
         )}
 
         {stats && total > 0 && (
-          <p className="text-xs sm:text-sm text-text-base/45 max-w-2xl mx-auto px-4">
-            {total.toLocaleString('pt-BR')} municípios analisados com dados ANATEL ({stats.mes_referencia}) e IBGE.
+          <p className="text-xs text-text-base/35 max-w-2xl mx-auto px-4 mt-8">
+            Baseado no Censo Demográfico 2022 (IBGE) · Atualizado em junho de 2025
           </p>
         )}
       </section>
