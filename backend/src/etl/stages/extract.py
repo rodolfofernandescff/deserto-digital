@@ -199,9 +199,15 @@ class ExtractStage:
 
     def _buscar_municipios_ibge(self) -> list[dict]:
         """Busca lista completa de municípios com hierarquia de UF e região."""
-        resp = httpx.get(_IBGE_LOCALIDADES_URL, timeout=30)
-        resp.raise_for_status()
-        return resp.json()
+        try:
+            resp = httpx.get(_IBGE_LOCALIDADES_URL, timeout=30)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPError as exc:
+            raise ExtractError(
+                "IBGE Localidades API indisponível — impossível continuar sem a lista de municípios",
+                {"url": _IBGE_LOCALIDADES_URL, "erro": str(exc)},
+            ) from exc
 
     def _buscar_dados_censo(self) -> dict[str, dict]:
         """Consolida população, domicílios totais e domicílios com internet por município."""
@@ -244,9 +250,13 @@ class ExtractStage:
         campo: str,
         filtro_variavel: Callable[[str], bool] | None = None,
     ) -> None:
-        resp = httpx.get(url, timeout=120)
+        resp = httpx.get(url, timeout=180)
         resp.raise_for_status()
-        for row in resp.json()[1:]:
+        data = resp.json()
+        if not isinstance(data, list) or len(data) < 2:
+            logger.warning("SIDRA retornou formato inesperado para %s: %s", campo, str(data)[:200])
+            return
+        for row in data[1:]:
             if not isinstance(row, dict):
                 continue
 
@@ -276,6 +286,10 @@ class ExtractStage:
             data = resp.json()
         except httpx.HTTPError as exc:
             logger.error("IBGE SIDRA 7395 falhou: %s. Renda ficará zerada.", exc)
+            return {}
+
+        if not isinstance(data, list) or len(data) < 2:
+            logger.warning("SIDRA 7395 retornou formato inesperado: %s", str(data)[:200])
             return {}
 
         resultado: dict[str, float] = {}

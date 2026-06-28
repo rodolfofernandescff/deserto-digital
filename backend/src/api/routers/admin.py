@@ -11,7 +11,7 @@ import logging
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, status
 
-from src.api.dependencies import Settings, get_settings, get_store
+from src.api.dependencies import Settings, get_settings, get_store, get_store_any
 from src.api.schemas.responses import StatsGerais
 from src.store.memory_store import InMemoryStore
 
@@ -51,7 +51,7 @@ def _executar_etl(store: InMemoryStore) -> None:
 async def refresh(
     background_tasks: BackgroundTasks,
     authorization: str | None = Header(None, alias="authorization"),
-    store: InMemoryStore = Depends(get_store),
+    store: InMemoryStore = Depends(get_store_any),
     settings: Settings = Depends(get_settings),
 ) -> dict:
     """Re-executa o pipeline ETL em background e atualiza os dados em memória.

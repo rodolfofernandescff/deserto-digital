@@ -29,8 +29,9 @@ from src.store.memory_store import InMemoryStore
 
 logger = logging.getLogger(__name__)
 
-_DATA_PATH = (
-    Path(os.getenv("DATA_PATH", "/app/data/municipios.json"))
+_DATA_PATH = Path(
+    os.getenv("DATA_PATH") or
+    str(Path(__file__).resolve().parents[3] / "data" / "municipios.json")
 )
 
 

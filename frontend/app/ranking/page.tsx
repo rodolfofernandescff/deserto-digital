@@ -21,7 +21,7 @@ export default function RankingPage() {
     <div className="container-app py-8 space-y-6 animate-fade-in">
       {/* ── Header da página ──────────────────────────────────────────── */}
       <div className="space-y-3">
-        <h1 className="section-title">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">
           Municípios em{' '}
           <span className="text-gradient">Deserto Digital</span>
         </h1>

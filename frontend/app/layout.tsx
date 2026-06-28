@@ -1,10 +1,30 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { DM_Sans, Playfair_Display, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-dm-sans',
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  weight: ['400', '600', '700', '800', '900'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  weight: ['400', '500', '700'],
+  display: 'swap',
+})
 
 // ── Metadados globais ────────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -59,7 +79,7 @@ export default function RootLayout({
   children: ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={`dark ${inter.variable}`}>
+    <html lang="pt-BR" className={`dark ${dmSans.variable} ${playfair.variable} ${jetbrains.variable}`}>
       <body className="flex min-h-screen flex-col bg-background font-sans text-text-base antialiased selection:bg-accent/30">
         {/* Header fixo com navegação principal */}
         <Header />

@@ -56,9 +56,9 @@ export function Header() {
               <line x1="2" y1="2" x2="22" y2="22" className="text-critico opacity-80" />
             </svg>
           </div>
-          <span className="text-lg font-bold tracking-tight">
+          <span className="font-display text-xl font-bold tracking-tight">
             <span className="text-text-base">Deserto </span>
-            <span className="text-accent/80 font-medium">Digital</span>
+            <span className="text-accent">Digital</span>
           </span>
         </Link>
 

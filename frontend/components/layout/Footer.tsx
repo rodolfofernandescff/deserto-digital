@@ -1,12 +1,4 @@
-/**
- * Footer — Rodapé do site
- *
- * Exibe:
- * - Créditos FernandesLab
- * - Links rápidos para as páginas
- * - Menção às fontes de dados (Anatel, IBGE)
- * - Ano corrente
- */
+import Link from 'next/link'
 
 export function Footer() {
   return (
@@ -30,8 +22,9 @@ export function Footer() {
               Navegação
             </p>
             <nav className="flex flex-col gap-1" aria-label="Links do rodapé">
-              {/* TODO: Links para /, /ranking, /sobre */}
-              {/* Usar <Link> do Next.js com classe .link ou estilo próprio */}
+              <Link href="/" className="text-xs text-text-base/50 hover:text-accent transition-colors">Mapa</Link>
+              <Link href="/ranking" className="text-xs text-text-base/50 hover:text-accent transition-colors">Ranking</Link>
+              <Link href="/sobre" className="text-xs text-text-base/50 hover:text-accent transition-colors">Sobre</Link>
             </nav>
           </div>
 

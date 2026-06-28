@@ -22,8 +22,9 @@ const config: Config = {
         accent: '#1B9AAA',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['var(--font-dm-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-playfair)', 'Georgia', 'serif'],
+        mono: ['var(--font-jetbrains)', 'Fira Code', 'monospace'],
       },
       borderRadius: {
         card: '0.75rem',
