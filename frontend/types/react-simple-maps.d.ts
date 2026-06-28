@@ -61,4 +61,18 @@ declare module 'react-simple-maps' {
   }
 
   export function Annotation(props: AnnotationProps): JSX.Element
+
+  export interface LineProps {
+    from: [number, number]
+    to: [number, number]
+    stroke?: string
+    strokeWidth?: number
+    strokeLinecap?: string
+    strokeDasharray?: string
+    className?: string
+    style?: React.CSSProperties
+    [key: string]: unknown
+  }
+
+  export function Line(props: LineProps): JSX.Element
 }

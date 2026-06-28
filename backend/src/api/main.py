@@ -9,6 +9,7 @@ Para produção com múltiplas réplicas, substituir pelo slowapi + Redis.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import time
@@ -96,22 +97,92 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+# ── ETL helpers ───────────────────────────────────────────────────────────────
+
+def _executar_etl_sync(data_path: Path) -> bool:
+    """Executa o pipeline ETL de forma síncrona (para uso em asyncio.to_thread).
+
+    Returns:
+        True se o pipeline concluiu com sucesso.
+    """
+    from src.etl.pipeline import ETLPipeline
+
+    pipeline = ETLPipeline(output_path=str(data_path))
+    resultado = pipeline.run()
+    if resultado.sucesso:
+        logger.info(
+            "ETL concluído: %d municípios em %.1fs",
+            resultado.total_municipios,
+            resultado.duracao_segundos,
+        )
+    else:
+        logger.error("ETL falhou: %s", resultado.erros[:3])
+    return resultado.sucesso
+
+
+async def _periodic_etl(data_path: Path, interval_hours: int = 168) -> None:
+    """Reexecuta o ETL periodicamente em background (padrão: semanal).
+
+    Roda o ETL em thread-pool via asyncio.to_thread para não bloquear o
+    event loop. Após cada execução bem-sucedida, recarrega o InMemoryStore.
+    """
+    while True:
+        await asyncio.sleep(interval_hours * 3600)
+        logger.info("ETL periódico iniciando (intervalo configurado: %dh)...", interval_hours)
+        try:
+            sucesso = await asyncio.to_thread(_executar_etl_sync, data_path)
+            if sucesso:
+                init_store(str(data_path))
+                store = get_store_any()
+                logger.info("ETL periódico: store recarregado com %d municípios", store.total)
+        except Exception:
+            logger.exception("Erro inesperado no ETL periódico")
+
+
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Carrega o store no startup; libera no shutdown (sem recursos a fechar)."""
+    """Startup: carrega dados (executando ETL se necessário). Registra ETL semanal."""
+
+    # Se o arquivo de dados não existe, executar ETL agora para que a API
+    # suba com dados válidos. O ETL roda em thread para não bloquear o loop.
+    if not _DATA_PATH.exists():
+        logger.warning(
+            "municipios.json não encontrado em %s — executando ETL no startup...",
+            _DATA_PATH,
+        )
+        try:
+            await asyncio.to_thread(_executar_etl_sync, _DATA_PATH)
+        except Exception as exc:
+            logger.error("ETL no startup falhou inesperadamente: %s", exc)
+
+    # Carregar (ou recarregar) o store a partir do JSON gerado pelo ETL
     try:
         init_store(str(_DATA_PATH))
     except FileNotFoundError:
         logger.warning(
-            "Dados não encontrados em %s. Execute: make etl", _DATA_PATH
+            "Dados não encontrados em %s após tentativa de ETL. "
+            "A API responderá 503 em endpoints de dados até que o ETL seja executado.",
+            _DATA_PATH,
         )
     except Exception as exc:
         logger.error("Erro ao carregar dados no startup: %s", exc)
 
+    # Registrar tarefa de ETL periódico semanal em background
+    etl_task = asyncio.create_task(
+        _periodic_etl(_DATA_PATH, interval_hours=168),
+        name="etl-semanal",
+    )
+    logger.info("ETL periódico semanal registrado (próxima execução em 168h)")
+
     yield  # aplicação rodando
 
+    etl_task.cancel()
+    try:
+        await etl_task
+    except asyncio.CancelledError:
+        pass
     logger.info("API encerrando")
 
 

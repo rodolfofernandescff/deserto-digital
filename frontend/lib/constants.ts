@@ -76,8 +76,12 @@ function lerpColor(from: string, to: string, t: number): string {
   )
 }
 
+/** Fallback para estados sem dados no mapa. */
+export const COR_SEM_DADOS = '#3A3F55'
+
 /** Cor contínua do mapa — verde (conectado) → vermelho (crítico). */
-export function iddToColor(idd: number): string {
+export function iddToColor(idd: number | null | undefined): string {
+  if (idd == null || isNaN(idd)) return COR_SEM_DADOS
   const value = Math.max(0, Math.min(100, idd))
 
   if (value <= 12) return NIVEL_COLORS.CONECTADO

@@ -1,4 +1,4 @@
-Add-Content .gitignore "# Python / Backend
+# Python / Backend
 __pycache__/
 *.py[cod]
 *.pyo
@@ -30,6 +30,10 @@ npm-debug.log*
 .idea/
 *.DS_Store
 Thumbs.db
-*.swp"
+*.swp
+
 # Claude Code
 .claude/
+
+# Notas pessoais de portfólio (não publicar no repositório)
+NOTAS.md

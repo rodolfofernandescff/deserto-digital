@@ -109,6 +109,12 @@
       opacity: 1;
       transform: none;
     }
+
+    /* Desabilita animação de estados no mapa */
+    svg path {
+      animation: none !important;
+      opacity: 1 !important;
+    }
   }
 
   /* Fade-in suave para transições de página */
@@ -159,6 +165,18 @@
     }
     to {
       box-shadow: 0 0 20px rgba(27, 154, 170, 0.5);
+    }
+  }
+
+  /* Revelação staggered dos estados do mapa */
+  @keyframes stateReveal {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
   }
 
